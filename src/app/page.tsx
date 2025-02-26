@@ -1,5 +1,7 @@
 import Count from "@/components/_/Count";
+import { CountProvider } from "@/components/providers/ZustandProvider";
 import { getCount } from "@/server-action";
+import { CountType } from "@/type/count";
 import {
   dehydrate,
   HydrationBoundary,
@@ -16,10 +18,17 @@ export default async function Home() {
     queryFn: () => getCount(),
   });
 
+  const res = await fetch("http://localhost:4000/count", {
+    cache: "no-store",
+  });
+  const data: CountType = await res.json();
+
   return (
     <>
       <HydrationBoundary state={dehydrate(queryClient)}>
-        <Count />
+        <CountProvider count={data.count}>
+          <Count />
+        </CountProvider>
       </HydrationBoundary>
     </>
   );
